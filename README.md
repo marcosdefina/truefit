@@ -4,6 +4,162 @@
 
 ---
 
+## Getting Started (Windows)
+
+This is a step-by-step guide for people who have **never done development before**. Follow it from top to bottom and you'll have the app running on your machine.
+
+---
+
+### Step 1 — Install the required software
+
+You need four free programs. Download and install each one:
+
+| Software | What it does | Download link |
+|----------|-------------|---------------|
+| **Git** | Lets you download and sync code from the internet | https://git-scm.com/downloads |
+| **VS Code** | The code editor — where you read and change files | https://code.visualstudio.com/ |
+| **Python 3.12+** | Runs the backend (the brain of the app) | https://www.python.org/downloads/ |
+| **Node.js 20+** | Runs the frontend (the part you see in the browser) | https://nodejs.org/ (pick the LTS version) |
+
+> **Important during Python install:** When the installer opens, **tick the box that says "Add Python to PATH"** before clicking Install. If you miss this, Python won't be found later.
+
+> **Important during Node.js install:** Just click Next through everything — the defaults are fine.
+
+After installing all four, **close any open terminals/PowerShell windows** and open a fresh one so the new programs are detected.
+
+---
+
+### Step 2 — Download the project (git clone)
+
+Open **PowerShell** (press the Windows key, type `PowerShell`, click it).
+
+Pick a folder where you want the project to live (for example your Desktop), then type:
+
+```powershell
+cd ~\Desktop
+git clone https://github.com/YOUR_USERNAME/personal_bootstrap.git
+cd personal_bootstrap\truefit
+```
+
+> Replace `YOUR_USERNAME` with the actual GitHub username — ask Marcos if you're not sure.
+
+**Already have the project?** If someone already cloned it before and you want to get the latest changes:
+
+```powershell
+cd ~\Desktop\personal_bootstrap
+git pull
+cd truefit
+```
+
+`git pull` downloads any updates that other people pushed since last time.
+
+---
+
+### Step 3 — Run the automated setup
+
+There's a script that does **everything else** for you — creates the Python environment, installs all dependencies, and starts both servers.
+
+Still in PowerShell, inside the `truefit` folder:
+
+```powershell
+# Allow scripts to run (you only need to do this once, ever)
+Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned
+
+# Run the setup
+.\setup.ps1
+```
+
+That's it. Two new windows will open (one for the backend, one for the frontend). Wait about 10 seconds for them to finish loading, then open your browser and go to:
+
+```
+http://localhost:5173
+```
+
+You should see the TrueFit app.
+
+---
+
+### Step 4 — Next time (daily use)
+
+You **don't** need to install anything again. Just:
+
+```powershell
+cd ~\Desktop\personal_bootstrap
+git pull           # get latest changes
+cd truefit
+.\setup.ps1        # start everything
+```
+
+To **stop** the app, just close the two command windows that `setup.ps1` opened.
+
+---
+
+### What the setup script does (for the curious)
+
+If you want to understand what `setup.ps1` automates, here's the manual equivalent:
+
+```powershell
+# 1. Create a Python virtual environment (isolated space for Python packages)
+cd truefit
+python -m venv .venv
+
+# 2. Activate it (tells PowerShell to use this environment)
+.\.venv\Scripts\Activate.ps1
+
+# 3. Install Python dependencies
+pip install -r api\requirements.txt
+
+# 4. Install frontend dependencies
+cd web
+npm install
+cd ..
+
+# 5. Start the backend (the API server)
+cd api
+python -m uvicorn main:app --port 8100 --reload
+
+# 6. (in a separate terminal) Start the frontend
+cd web
+npm run dev
+```
+
+You don't need to do any of this manually — `setup.ps1` handles it all.
+
+---
+
+### Troubleshooting
+
+| Problem | Solution |
+|---------|----------|
+| `python` is not recognized | You didn't tick "Add to PATH" during install. Uninstall Python, reinstall, tick the box. |
+| `node` is not recognized | Close PowerShell, open a new one. If still missing, reinstall Node.js. |
+| `git` is not recognized | Close PowerShell, open a new one. If still missing, restart your PC. |
+| `.\setup.ps1 cannot be loaded` | Run: `Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned` |
+| `npm install` fails with permission errors | Run PowerShell as Administrator (right-click → Run as administrator). |
+| Frontend shows blank page | Make sure the backend window is running. Check that `http://localhost:8100/health` returns `{"status":"ok"}`. |
+| `git pull` says "merge conflict" | Ask Marcos — don't try to fix it yourself, it's easy to lose work. |
+
+---
+
+### macOS / Linux alternative
+
+If you're on a Mac or Linux, you don't need the PowerShell script. Just run:
+
+```bash
+cd truefit
+
+# Backend
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r api/requirements.txt
+cd api && uvicorn main:app --port 8100 --reload &
+
+# Frontend
+cd ../web && npm install && npm run dev
+```
+
+---
+
 ## Architecture Overview
 
 ```
