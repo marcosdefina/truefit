@@ -1,0 +1,33 @@
+version: "3.8"
+
+services:
+  truefit-api:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    container_name: truefit-api
+    restart: unless-stopped
+    ports:
+      - "8100:8100"
+    environment:
+      - TRUEFIT_DEBUG=false
+      - TRUEFIT_CORS_ORIGINS=["http://localhost:5173","http://localhost:8101","https://truefit.stillwaters.cz"]
+    networks:
+      - truefit-net
+
+  truefit-web:
+    build:
+      context: .
+      dockerfile: Dockerfile.web
+    container_name: truefit-web
+    restart: unless-stopped
+    ports:
+      - "8101:80"
+    depends_on:
+      - truefit-api
+    networks:
+      - truefit-net
+
+networks:
+  truefit-net:
+    driver: bridge
